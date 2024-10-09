@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nfs-setup-pod
+spec:
+  containers:
+  - name: setup-container
+    image: busybox
+    command:
+    - sh
+    - -c
+    - |
+      mkdir -p /mnt/nfs/tenantid/postgre /mnt/nfs/tenantid/grafana /mnt/nfs/tenantid/prometheus && \
+      chown -R 65534:65534 /mnt/nfs/tenantid && \
+      chmod -R 777 /mnt/nfs/tenantid
+    volumeMounts:
+    - name: nfs-volume
+      mountPath: /mnt/nfs
+  restartPolicy: Never
+  volumes:
+  - name: nfs-volume
+    persistentVolumeClaim:
+      claimName: nfs-pvc
